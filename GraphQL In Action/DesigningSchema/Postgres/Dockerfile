@@ -1,0 +1,4 @@
+FROM postgres
+ENV POSTGRES_PASSWORD password1
+
+EXPOSE 5432:5432
