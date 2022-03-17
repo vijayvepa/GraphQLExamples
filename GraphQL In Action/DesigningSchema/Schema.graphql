@@ -1,0 +1,215 @@
+type User  {
+    id: ID!
+    createdAt: String!
+    username: String!
+    name: String
+    taskList: [Task!]!
+}
+
+type Task implements SearchResultItem {
+    id: ID!
+    createdAt: String!
+    content: String!
+    approachCount: Int!
+    author: User!
+    approachList: [Approach!]!
+}
+
+type Approach implements SearchResultItem {
+    id: ID!
+    createdAt: String!
+    content: String!
+    task: Task!
+    voteCount: Int!
+    author: User!
+    detailList: [ApproachDetail!]
+
+}
+
+
+type Query  {
+    taskMainList: [Task!]
+    search (term: String!) : [SearchResultItem!]
+    taskInfo (id: ID!): Task
+    me (token:  ID!): User!
+}
+
+#union TaskOrApproach = Task  | Approach
+
+interface SearchResultItem  {
+    id: ID!
+    content: String!
+}
+
+enum ApproachDetailCategory  {
+    NOTE
+    EXPLANATION
+    WARNING
+}
+
+type ApproachDetail  {
+    content : String!
+    category: ApproachDetailCategory!
+}
+
+query SomeOther  {
+    taskMainList  {
+        id
+        content
+    }
+
+    search (term: "something")  {
+        type: __typename
+
+        id
+        content
+
+        ... on Task  {
+
+            approachCount
+        }
+
+        ... on Approach {
+            task  {
+                id
+                content
+            }
+        }
+    }
+
+    taskInfo  (id: "something") {
+        content
+
+        author  {
+            name
+        }
+
+        approachList {
+
+            author {
+                name
+            }
+
+            detailList {
+                content
+            }
+        }
+    }
+
+    me  (token: "sometoken") {
+        taskList  {
+            content
+        }
+    }
+}
+
+
+type Error {
+    message: String!
+}
+
+type UserPayload {
+    errors: [Error!]!
+    user: User
+    authToken: String
+}
+
+type UserDeletePayload {
+    errors: [Error!]!
+    deletedUserId: ID
+}
+
+input UserInput  {
+    username: String!
+    password: String!
+    firstName: String!
+    lastName: String!
+}
+
+
+input AuthInput {
+    username: String!
+    password: String!
+}
+
+input TaskInput {
+    content: String!
+    tags: [String!]!
+    isPrivate: Boolean!
+}
+
+type TaskPayload {
+    errors: [Error!]!
+    task: Task
+}
+
+input ApproachDetailInput  {
+    content: String!
+    category: ApproachDetailCategory!
+}
+
+input ApproachInput  {
+    content: String!
+    detailList: [ApproachDetailInput!]!
+}
+
+input ApproachVoteInput  {
+    """true for up-vote and false for downvote"""
+    up: Boolean!
+}
+
+type ApproachPayload {
+    errors: [Error!]!,
+    approach: Approach
+}
+
+type Mutation {
+    userCreate (input: UserInput!) : UserPayload!
+    userUpdate(userId: ID!,  input: UserInput!): UserPayload!
+    userLogin (credentials: AuthInput!): UserPayload!
+    userDelete: UserDeletePayload!
+
+    taskCreate (input: TaskInput!): TaskPayload!
+
+    approachCreate(
+        taskId: ID!
+        input: ApproachInput!
+    ): ApproachPayload!
+
+    approachUpdate(
+        approachId: ID!
+        input: ApproachInput!
+    ): ApproachPayload!
+
+    approachVote(
+        approachId: ID!
+        input: ApproachVoteInput!
+    ): ApproachPayload!
+}
+
+mutation Something {
+    userCreate  (input:  {firstName: "something", lastName: "some", password: "wdfsf", username: "dfsdf"}) {
+        user  {
+            name
+        }
+        errors  {
+            message
+        }
+    }
+
+    userLogin (credentials:  {username: "af", password: "wdf"}) {
+        user  {
+            name
+        }
+    }
+
+    userDelete  {
+        deletedUserId
+    }
+}
+
+
+type Subscription {
+    voteChanged(taskId: ID!): Approach!
+    taskMainListChanged: [Task!]
+}
