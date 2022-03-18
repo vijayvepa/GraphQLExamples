@@ -4,7 +4,8 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import {Configuration} from "./configuration";
 import {graphqlHTTP} from "express-graphql";
-import {schema, rootValue} from "./schema";
+import {schema} from "./schema";
+import {schemaFromString, rootValue} from "./schema/from-string";
 
 async function main() {
 
@@ -20,7 +21,9 @@ async function main() {
         res.send('Hello world!');
     });
 
-    server.use('/', graphqlHTTP({schema, rootValue, graphiql: true}));
+    server.use('/from-string', graphqlHTTP({schema: schemaFromString, rootValue, graphiql: true}));
+
+    server.use('/', graphqlHTTP({schema, graphiql: true}));
 
     server.listen(Configuration.PORT, () => {
         console.log(`Server URL: http://localhost:${Configuration.PORT}`);
