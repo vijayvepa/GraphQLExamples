@@ -1,37 +1,29 @@
-import {GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull} from "graphql";
+import {GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull, printSchema} from "graphql";
 import {NumbersInRange} from "./types/numbers-in-range"
 
 
 let Query = new GraphQLObjectType({
-    name: 'Query',
-    fields: {
+    name: 'Query', fields: {
         // currentTime: String!
         currentTime: {
-            type: GraphQLString,
-            resolve: getCurrentTime
+            type: GraphQLString, resolve: getCurrentTime
         },
 
         // sumNumbersInRange(begin: Int!, end: Int!) : Int!
 
         sumNumbersInRange: {
-            type: new GraphQLNonNull(GraphQLInt),
-            args: {
-                begin: {type: new GraphQLNonNull(GraphQLInt)},
-                end: {type: new GraphQLNonNull(GraphQLInt)}
-            },
-            resolve: getSumNumbersInRange
+            type: new GraphQLNonNull(GraphQLInt), args: {
+                begin: {type: new GraphQLNonNull(GraphQLInt)}, end: {type: new GraphQLNonNull(GraphQLInt)}
+            }, resolve: getSumNumbersInRange
         },
 
         //type NumbersInRange { sum:Int!  count: Int! }
         //numbersInRange(begin: Int!, end:Int!): NumbersInRange!
 
         numbersInRange: {
-            type: new GraphQLNonNull(NumbersInRange),
-            args: {
-                begin: {type: new GraphQLNonNull(GraphQLInt)},
-                end: {type: new GraphQLNonNull(GraphQLInt)}
-            },
-            resolve: getNumbersInRange
+            type: new GraphQLNonNull(NumbersInRange), args: {
+                begin: {type: new GraphQLNonNull(GraphQLInt)}, end: {type: new GraphQLNonNull(GraphQLInt)}
+            }, resolve: getNumbersInRange
         }
     }
 });
@@ -55,7 +47,7 @@ function getSumNumbersInRange(source, {begin, end}) {
 function getNumbersInRange(source, {begin, end}) {
     console.log(`Source: ${source}, begin: ${begin}, end: ${end}`);
 
-    if(end < begin){
+    if (end < begin) {
         throw Error(`Invalid range because ${end} < ${begin}`);
     }
 
@@ -65,11 +57,11 @@ function getNumbersInRange(source, {begin, end}) {
     for (let i = begin; i <= end; i++) {
         count++;
     }
-    return {sum, count, average: sum/count};
+    return {sum, count, average: sum / count};
 }
-
 
 export const schema = new GraphQLSchema({
     query: Query
 });
 
+console.log(printSchema(schema));
