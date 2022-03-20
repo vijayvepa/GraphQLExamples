@@ -6,7 +6,7 @@ let Query = new GraphQLObjectType({
     name: 'Query', fields: {
         // currentTime: String!
         currentTime: {
-            type: GraphQLString, resolve: getCurrentTime
+            type: GraphQLString, resolve: getCurrentTimeAsync
         },
 
         // sumNumbersInRange(begin: Int!, end: Int!) : Int!
@@ -28,8 +28,32 @@ let Query = new GraphQLObjectType({
     }
 });
 
+function getCurrentTimeAsync() {
+    return new Promise(resolve =>
+        setTimeout(() => {
+            const isoString = new Date().toISOString();
+            resolve(isoString.slice(11, 19));
+        }, 5000)
+    );
+}
+
+function getCurrentTime2() {
+
+
+    setTimeout(() => {
+        const isoString = new Date().toISOString();
+        return isoString.slice(11, 19);
+    }, 5000);
+
+
+}
+
 
 function getCurrentTime() {
+    const sleepToDate = new Date(new Date().getTime() + 5000);
+    while (sleepToDate > new Date()) {
+        // sleep
+    }
     const isoString = new Date().toISOString();
     return isoString.slice(11, 19);
 }
@@ -65,3 +89,6 @@ export const schema = new GraphQLSchema({
 });
 
 console.log(printSchema(schema));
+
+//generate typescript from graphql ->
+// https://www.leighhalliday.com/generating-types-apollo#:~:text=Generating%20TypeScript%20Types%20from%20GraphQL%20Schema%20in%20Apollo,Component.%20...%207%20Gotchas.%20...%208%20Conclusion.%20
