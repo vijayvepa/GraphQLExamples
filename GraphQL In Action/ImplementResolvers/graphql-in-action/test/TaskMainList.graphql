@@ -1,0 +1,9 @@
+query {
+    taskMainList {
+        id
+        content
+        tags
+        approachCount
+        createdAt
+    }
+}

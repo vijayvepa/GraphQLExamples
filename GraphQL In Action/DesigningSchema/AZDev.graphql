@@ -13,6 +13,7 @@ type Task implements SearchResultItem {
     approachCount: Int!
     author: User!
     approachList: [Approach!]!
+    tags: [String!]!
 }
 
 type Approach implements SearchResultItem {

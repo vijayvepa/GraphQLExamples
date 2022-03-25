@@ -6,6 +6,7 @@ import {Configuration} from "./configuration";
 import {graphqlHTTP} from "express-graphql";
 import {schema} from "./schema";
 import {schemaFromString, rootValue} from "./schema/from-string";
+import {schemaFromFile, rootValueForFile} from "./schema/from-file";
 
 async function main() {
 
@@ -22,6 +23,7 @@ async function main() {
     });
 
     server.use('/from-string', graphqlHTTP({schema: schemaFromString, rootValue, graphiql: true}));
+    server.use('/from-file', graphqlHTTP({schema: await schemaFromFile(), rootValue: rootValueForFile, graphiql: true}));
 
     server.use('/', graphqlHTTP({schema, graphiql: true}));
 

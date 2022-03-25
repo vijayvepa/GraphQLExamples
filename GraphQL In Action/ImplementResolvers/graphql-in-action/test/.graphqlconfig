@@ -1,0 +1,15 @@
+{
+  "name": "AZDev GraphQL Schema",
+  "schemaPath": "AZDev.graphql",
+  "extensions": {
+    "endpoints": {
+      "AZDev  GraphQL Endpoint": {
+        "url": "http://localhost:4321",
+        "headers": {
+          "user-agent": "JS GraphQL"
+        },
+        "introspect": true
+      }
+    }
+  }
+}
