@@ -1,11 +1,28 @@
 import pg from 'pg';
 
 import { Configuration } from '../configuration';
+import url from 'url'
 
 export default async function PostgresClient() {
-    const postgresPool = new pg.Pool({
-        connectionString: Configuration.POSTGRES_CONNECTIONS_STRING,
-    });
+
+    console.log("connectionString: " + Configuration.POSTGRES_CONNECTIONS_STRING);
+
+    const params = url.parse(Configuration.POSTGRES_CONNECTIONS_STRING);
+    const auth = params.auth.split(':');
+
+    const options = {
+        user: auth[0],
+        password: auth[1],
+        host: params.hostname,
+        port: params.port,
+        database: params.pathname.split('/')[1],
+        ssl: false
+    };
+
+    console.log(`options: ${options.user} ${options.password} ${options.host} ${options.port}`);
+
+
+    const postgresPool = new pg.Pool(options);
 
     // Test the connection
     const client = await postgresPool.connect();
@@ -26,7 +43,7 @@ export default async function PostgresClient() {
     });
 
     return {
-        pgPool: postgresPool,
+        connectionPool: postgresPool,
         pgClose: async () => postgresPool.end(),
     };
 }

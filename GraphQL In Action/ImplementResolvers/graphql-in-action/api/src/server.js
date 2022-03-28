@@ -7,8 +7,11 @@ import {graphqlHTTP} from "express-graphql";
 import {schema} from "./schema";
 import {schemaFromString, rootValue} from "./schema/from-string";
 import {schemaFromFile, rootValueForFile} from "./schema/from-file";
+import PostgresClient from "./db/PostgresClient";
 
 async function main() {
+
+    const postgresClient = await PostgresClient();
 
     const server = express();
 
@@ -25,7 +28,7 @@ async function main() {
     server.use('/from-string', graphqlHTTP({schema: schemaFromString, rootValue, graphiql: true}));
     server.use('/from-file', graphqlHTTP({schema: await schemaFromFile(), rootValue: rootValueForFile, graphiql: true}));
 
-    server.use('/', graphqlHTTP({schema, graphiql: true}));
+    server.use('/', graphqlHTTP({schema, graphiql: true, context: {postgresPool: postgresClient.connectionPool}}));
 
     server.listen(Configuration.PORT, () => {
         console.log(`Server URL: http://localhost:${Configuration.PORT}`);

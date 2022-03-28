@@ -1,6 +1,14 @@
-import {GraphQLSchema, GraphQLObjectType, GraphQLString, GraphQLInt, GraphQLNonNull, printSchema} from "graphql";
+import {
+    GraphQLSchema,
+    GraphQLObjectType,
+    GraphQLString,
+    GraphQLInt,
+    GraphQLNonNull,
+    printSchema,
+    GraphQLList
+} from "graphql";
 import {NumbersInRange} from "./types/numbers-in-range"
-
+import Task from  "./types/task"
 
 let Query = new GraphQLObjectType({
     name: 'Query', fields: {
@@ -24,6 +32,17 @@ let Query = new GraphQLObjectType({
             type: new GraphQLNonNull(NumbersInRange), args: {
                 begin: {type: new GraphQLNonNull(GraphQLInt)}, end: {type: new GraphQLNonNull(GraphQLInt)}
             }, resolve: getNumbersInRange
+        },
+
+        taskMainList: {
+            type: new GraphQLList(new GraphQLNonNull(Task)),
+            resolve: async (source, args, {postgresPool}) => {
+                const postgresResp = await postgresPool.query(`
+                    SELECT * FROM azdev.tasks WHERE is_private = FALSE
+                    ORDER BY created_at DESC LIMIT 100
+                `);
+                return postgresResp.rows;
+            }
         }
     }
 });
