@@ -34,7 +34,7 @@ let Query = new GraphQLObjectType({
             }, resolve: getNumbersInRange
         },
 
-        taskMainListWithQuery: {
+        taskMainListWithSql: {
             type: new GraphQLList(new GraphQLNonNull(Task)),
             resolve: async (source, args, {postgresPool}) => {
                 const postgresResp = await postgresPool.query(`
