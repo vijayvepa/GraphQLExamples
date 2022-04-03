@@ -8,10 +8,12 @@ import {schema} from "./schema";
 import {schemaFromString, rootValue} from "./schema/from-string";
 import {schemaFromFile, rootValueForFile} from "./schema/from-file";
 import PostgresClient from "./db/PostgresClient";
+import PostgresApiWrapper from "./db/PostgresApiWrapper";
 
 async function main() {
 
     const postgresClient = await PostgresClient();
+    const postgresApiWrapper = await PostgresApiWrapper();
 
     const server = express();
 
@@ -28,7 +30,7 @@ async function main() {
     server.use('/from-string', graphqlHTTP({schema: schemaFromString, rootValue, graphiql: true}));
     server.use('/from-file', graphqlHTTP({schema: await schemaFromFile(), rootValue: rootValueForFile, graphiql: true}));
 
-    server.use('/', graphqlHTTP({schema, graphiql: true, context: {postgresPool: postgresClient.connectionPool}}));
+    server.use('/', graphqlHTTP({schema, graphiql: true, context: {postgresPool: postgresClient.connectionPool, postgresApi: postgresApiWrapper}}));
 
     server.listen(Configuration.PORT, () => {
         console.log(`Server URL: http://localhost:${Configuration.PORT}`);

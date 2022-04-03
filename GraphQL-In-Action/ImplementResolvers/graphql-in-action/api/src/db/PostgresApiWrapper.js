@@ -2,9 +2,9 @@ import {Queries} from './sqls';
 import PostgresClient from "./PostgresClient";
 
 const PostgresApiWrapper = async () => {
-    const {pgPool: postgresPool} = PostgresClient();
+     const {connectionPool} = await PostgresClient();
     const postgresQuery = (text, params = {}) =>
-        postgresPool.query(text, Object.values(params));
+        connectionPool.query(text, Object.values(params));
 
     return {
         taskMainList: async () => {

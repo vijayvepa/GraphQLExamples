@@ -16,8 +16,7 @@ export const Queries = {
     // SELECT
 
     tasksLatest: `
-    SELECT id, content, tags, user_id AS "userId", approach_count AS "approachCount", is_private AS "isPrivate", created_at AS "createdAt",
-      "author_id", "author_username", "author_firstName", "author_lastName", "author_createdAt"
+    SELECT id, content, tags, user_id AS "userId", approach_count AS "approachCount", is_private AS "isPrivate", created_at AS "createdAt"
     FROM azdev.tasks
     WHERE is_private = FALSE
     ORDER BY created_at DESC

@@ -34,7 +34,7 @@ let Query = new GraphQLObjectType({
             }, resolve: getNumbersInRange
         },
 
-        taskMainList: {
+        taskMainListWithQuery: {
             type: new GraphQLList(new GraphQLNonNull(Task)),
             resolve: async (source, args, {postgresPool}) => {
                 const postgresResp = await postgresPool.query(`
@@ -42,6 +42,13 @@ let Query = new GraphQLObjectType({
                     ORDER BY created_at DESC LIMIT 100
                 `);
                 return postgresResp.rows;
+            }
+        },
+
+        taskMainList: {
+            type: new GraphQLList(new GraphQLNonNull(Task)),
+            resolve: async (source, args, {postgresApi}) => {
+                return  postgresApi.taskMainList();
             }
         }
     }
