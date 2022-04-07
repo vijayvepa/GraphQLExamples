@@ -8,7 +8,7 @@ import {
     GraphQLList
 } from "graphql";
 import {NumbersInRange} from "./types/numbers-in-range"
-import Task from  "./types/task"
+import Task, {TaskV2} from  "./types/task"
 
 let Query = new GraphQLObjectType({
     name: 'Query', fields: {
@@ -49,6 +49,13 @@ let Query = new GraphQLObjectType({
             type: new GraphQLList(new GraphQLNonNull(Task)),
             resolve: async (source, args, {postgresApi}) => {
                 return  postgresApi.taskMainList();
+            }
+        },
+
+        taskMainListWithView: {
+            type: new GraphQLList(new GraphQLNonNull(TaskV2)),
+            resolve: async (source, args, {postgresApi}) => {
+                return  postgresApi.taskMainListWithView();
             }
         }
     }

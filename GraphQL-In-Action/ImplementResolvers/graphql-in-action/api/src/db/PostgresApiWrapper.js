@@ -11,6 +11,10 @@ const PostgresApiWrapper = async () => {
             const response = await postgresQuery(Queries.tasksLatest);
             return response.rows;
         },
+        taskMainListWithView: async () => {
+            const response = await postgresQuery(Queries.taskMainList);
+            return response.rows;
+        },
         userInfo: async (userId) => {
             console.log(`Getting usersFromIDs for userId: ${userId}` );
             const pgResp = await postgresQuery(Queries.usersFromIds, {$1: [userId]});

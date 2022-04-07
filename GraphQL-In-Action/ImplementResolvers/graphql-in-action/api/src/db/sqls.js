@@ -1,4 +1,4 @@
-const views = {
+export const Views = {
     tasksAndUsers: `
     SELECT t.*,
         u.id AS "author_id",
@@ -22,6 +22,15 @@ export const Queries = {
     ORDER BY created_at DESC
     LIMIT 100
   `,
+
+    taskMainList: `
+    SELECT id, content, tags, user_id AS "userId", approach_count AS "approachCount", is_private AS "isPrivate", created_at AS "createdAt",
+            "author_id", "author_username", "author_firstName", "author_lastName", "author_createdAt"
+    FROM (${Views.tasksAndUsers}) a
+    WHERE is_private = FALSE
+    ORDER BY "createdAt" DESC 
+    LIMIT 100
+    `,
 
     // $1: userIds
     usersFromIds: `
