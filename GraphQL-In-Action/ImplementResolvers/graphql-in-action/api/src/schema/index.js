@@ -8,9 +8,9 @@ import {
     GraphQLList
 } from "graphql";
 import {NumbersInRange} from "./types/numbers-in-range"
-import Task, {TaskV2} from  "./types/task"
+import Task, {TaskV2, TaskV3} from  "./types/task"
 
-let Query = new GraphQLObjectType({
+export const Query = new GraphQLObjectType({
     name: 'Query', fields: {
         // currentTime: String!
         currentTime: {
@@ -57,7 +57,41 @@ let Query = new GraphQLObjectType({
             resolve: async (source, args, {postgresApi}) => {
                 return  postgresApi.taskMainListWithView();
             }
-        }
+        },
+    }
+});
+
+
+export const QueryV2 = new GraphQLObjectType({
+    name: 'Query', fields: {
+        // currentTime: String!
+        currentTime: {
+            type: GraphQLString, resolve: getCurrentTimeAsync
+        },
+
+        // sumNumbersInRange(begin: Int!, end: Int!) : Int!
+
+        sumNumbersInRange: {
+            type: new GraphQLNonNull(GraphQLInt), args: {
+                begin: {type: new GraphQLNonNull(GraphQLInt)}, end: {type: new GraphQLNonNull(GraphQLInt)}
+            }, resolve: getSumNumbersInRange
+        },
+
+        //type NumbersInRange { sum:Int!  count: Int! }
+        //numbersInRange(begin: Int!, end:Int!): NumbersInRange!
+
+        numbersInRange: {
+            type: new GraphQLNonNull(NumbersInRange), args: {
+                begin: {type: new GraphQLNonNull(GraphQLInt)}, end: {type: new GraphQLNonNull(GraphQLInt)}
+            }, resolve: getNumbersInRange
+        },
+        taskMainList: {
+            type: new GraphQLList(new GraphQLNonNull(TaskV3)),
+            resolve: async (source, args, {postgresApi}) => {
+                return  postgresApi.taskMainList();
+            }
+        },
+
     }
 });
 
@@ -121,7 +155,10 @@ export const schema = new GraphQLSchema({
     query: Query
 });
 
+export const SchemaV2 = new GraphQLSchema({query: QueryV2});
+
 console.log(printSchema(schema));
+console.log(printSchema(SchemaV2));
 
 //generate typescript from graphql ->
 // https://www.leighhalliday.com/generating-types-apollo#:~:text=Generating%20TypeScript%20Types%20from%20GraphQL%20Schema%20in%20Apollo,Component.%20...%207%20Gotchas.%20...%208%20Conclusion.%20

@@ -20,6 +20,12 @@ const PostgresApiWrapper = async () => {
             const pgResp = await postgresQuery(Queries.usersFromIds, {$1: [userId]});
             return pgResp.rows[0];
         },
+        usersInfo: async(userIds) => {
+            const pgResp = await postgresQuery(Queries.usersFromIds, {$1: userIds});
+            return userIds.map((userId) =>
+                pgResp.rows.find((row) => userId === row.id)
+            );
+        },
         approachList: async (taskId) => {
             const pgResp = await postgresQuery(Queries.approachesForTaskIds, {$1: [taskId]});
             return pgResp.rows;

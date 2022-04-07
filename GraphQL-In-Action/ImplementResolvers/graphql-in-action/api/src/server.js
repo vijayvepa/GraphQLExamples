@@ -4,11 +4,12 @@ import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import {Configuration} from "./configuration";
 import {graphqlHTTP} from "express-graphql";
-import {schema} from "./schema";
+import {schema, SchemaV2} from "./schema";
 import {rootValue, schemaFromString} from "./schema/from-string";
 import {rootValueForFile, schemaFromFile} from "./schema/from-file";
 import PostgresClient from "./db/PostgresClient";
 import PostgresApiWrapper from "./db/PostgresApiWrapper";
+import DataLoader from "dataloader";
 
 async function main() {
 
@@ -46,11 +47,22 @@ async function main() {
         graphiql: true
     }));
 
-    server.use('/', graphqlHTTP({
+    server.use('/without-loaders', graphqlHTTP({
         schema, graphiql: true,
         context: {postgresPool: postgresClient.connectionPool, postgresApi: postgresApiWrapper},
         customFormatErrorFn: customFormatErrorFn
     }));
+
+    server.use('/', (req, res)=>{
+        const loaders = {
+            users: new DataLoader((userIds) => postgresApiWrapper.usersInfo(userIds))
+        };
+
+        const g = graphqlHTTP({schema: SchemaV2, graphiql:true,
+            context: {postgresApi: postgresApiWrapper, loaders}});
+
+        g(req, res);
+    })
 
 
 
